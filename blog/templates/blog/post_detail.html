@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+	<article class="media content-section">
+		<img class='rounded_circle article-img', src="{{ post.author.profile.image.url }}">
+	  <div class="media-body">
+	    <div class="article-metadata">
+	      <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
+	      <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+	    {% if post.author == user %}
+			<div>
+				<a class='btn btn-secondary btn-sm mt-1 mb-1' href="{% url 'post-update' post.id %}">Edit Post</a>
+				<a class='btn btn-danger btn-sm mt-1 mb-1' href="{% url 'post-delete' post.id %}">Delete</a>
+			</div>
+	    {% endif %}
+	    </div>
+	    <h2 class="article-title">{{ post.title }}</h2>
+	    <p class="article-content">{{ post.content }}</p>
+	  </div>
+	</article>
+	<p>
+		<a href="{% url 'post_share' post.id %}">
+			Share this post
+		</a>
+	</p>
+	{% with comment.count as total_comments %}
+		<h2>
+			{{ total_comments }} Comment(s) {{ total_comment|pluralize }}
+		</h2>
+	{% endwith %}
+	{% for comment in comment %}
+		<div class='comment'>
+			<p class="info">
+				Comment {{ forloop.counter }} by {{ comment.author }} {{ comment.created }}
+			</p>
+			{{ comment.body|linebreaks }}
+		</div>
+	{% empty %}
+		<p>There are no comments.</p>
+	{% endfor %}
+	{% include 'blog/include/comment_form.html' %}
+{% endblock content %}
