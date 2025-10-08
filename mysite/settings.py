@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv("SECRET_PASS")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','https://byteboard-fsln.onrender.com','byteboard-fsln.onrender.com', 'localhost']
+ALLOWED_HOSTS = ['*','https://byteboard-fsln.onrender.com','byteboard-jui8.onrender.com', 'localhost']
 CSRF_TRUSTED_ORIGINS = ["https://mysite-d803.onrender.com"]
 
 
