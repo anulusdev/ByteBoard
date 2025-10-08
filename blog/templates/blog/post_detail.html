@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
 	<article class="media content-section">
-		<img class='rounded_circle article-img', src="{{ post.author.profile.image.url }}">
+		<img class='rounded-circle article-img', src="{{ post.author.profile.image.url }}">
 	  <div class="media-body">
 	    <div class="article-metadata">
-	      <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
+	     <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author.username }}</a>
 	      <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
 	    {% if post.author == user %}
 			<div>
@@ -14,7 +14,7 @@
 	    {% endif %}
 	    </div>
 	    <h2 class="article-title">{{ post.title }}</h2>
-	    <p class="article-content">{{ post.content }}</p>
+	    <p class="article-content">{{ post.content|safe }}</p>
 	  </div>
 	</article>
 	<p>
@@ -22,12 +22,12 @@
 			Share this post
 		</a>
 	</p>
-	{% with comment.count as total_comments %}
+	{% with comments.count as total_comments %}
 		<h2>
 			{{ total_comments }} Comment(s) {{ total_comment|pluralize }}
 		</h2>
 	{% endwith %}
-	{% for comment in comment %}
+	{% for comment in comments %}
 		<div class='comment'>
 			<p class="info">
 				Comment {{ forloop.counter }} by {{ comment.author }} {{ comment.created }}

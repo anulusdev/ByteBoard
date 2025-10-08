@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from .forms import CommentForm, EmailPostForm, PostForm
+from django.contrib.auth.decorators import login_required
 from django.views.generic import (
 	ListView,
 	DetailView,
@@ -39,11 +40,12 @@ class UserPostListView(ListView):
 	def get_queryset(self):
 		user = get_object_or_404(User, username=self.kwargs.get('username'))
 		return Post.objects.filter(author=user).order_by('-date_posted')
-
+		
 
 # class PostDetailView(DetailView):
-	model = Post
-	template_name = 'blog/post_detail.html'
+# 	model = Post
+# 	context_object_name = "posts"
+# 	template_name = 'blog/post_detail.html'
 
 	def get_content(self, **kwargs):
 		content = super().get_content(**kwargs)
@@ -78,10 +80,11 @@ def post_detail(request, id, post):
 	return render(request,
 					'blog/post_detail.html',
 					{"post":post,
-					"comment":comments,
+					"comments":comments,
 					"form":form})
 
-@require_POST
+@login_required
+# @require_POST
 def post_comment(request, post_id):
 	post = get_object_or_404(Post, 
 							id=post_id)
@@ -98,6 +101,7 @@ def post_comment(request, post_id):
 							'form': form,
 							'comment': comment})
 
+@login_required
 def post_share(request, id):
 	post = get_object_or_404(Post, id=id)
 								# status = Post.Status.PUBLISHED)
@@ -107,13 +111,14 @@ def post_share(request, id):
 		form = EmailPostForm(request.POST)
 		if form.is_valid():
 			cd = form.cleaned_data
+			user = request.user
 			post_url = request.build_absolute_uri(
 				post.get_absolute_url())
 			subject = f"{cd['name']} recommends you read " \
 				f"{post.title}"
 			message = f"Read {post.title} at {post_url}\n\n" \
 				f"{cd['name']}\'s comments: {cd['comment']}"
-			send_mail(subject, message, cd['email'],
+			send_mail(subject, message, {user.email},
 				[cd['to']])
 			sent = True
 
