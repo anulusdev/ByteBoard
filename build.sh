@@ -7,4 +7,4 @@ python manage.py collectstatic --no-input
 
 python manage.py migrate
 
-python manage.py loaddata blog/fixtures/post.json
+python manage.py loaddata posts
