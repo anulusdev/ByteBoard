@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # 1
@@ -91,16 +92,23 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 # }
 
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "ByteBoard",
-        "USER" : "postgres", 
-        "PASSWORD" : "alhazanpassword$",
-        "PORT" : "5432",
-        "HOST" : "localhost"
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "ByteBoard",
+#         "USER" : "postgres", 
+#         "PASSWORD" : "alhazanpassword$",
+#         "PORT" : "5432",
+#         "HOST" : "localhost"
 
-    }
+#     }
+# }
+DATABASES = {
+    'default': dj_database_url.config(
+        # Replace this value with your local database's connection string.
+        default='postgresql://byteboard_postgresql_database_pc9m_user:xvjlTeo1c1sjdpBPD32Oayh959FUkPXy@dpg-d3kjdiqli9vc73c7icvg-a/byteboard_postgresql_database_pc9m',
+        conn_max_age=600
+    )
 }
 
 # Password validation
