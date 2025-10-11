@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_PASS")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*','https://byteboard-fsln.onrender.com','byteboard-jui8.onrender.com', 'localhost']
 CSRF_TRUSTED_ORIGINS = ["https://mysite-d803.onrender.com"]
@@ -103,6 +103,7 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 
 #     }
 # }
+
 DATABASES = {
     'default': dj_database_url.config(
         # Replace this value with your local database's connection string.

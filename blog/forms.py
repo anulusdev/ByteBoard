@@ -8,6 +8,13 @@ class EmailPostForm(forms.Form):
     comment = forms.CharField(required=False, widget=forms.Textarea)
     fields = ['name', 'to', "comment"]
 
+class EmailSendForm(forms.Form):
+    name = forms.CharField(max_length=50)
+    your_email = forms.EmailField()
+    to = forms.EmailField()
+    comment = forms.CharField(required=False, widget=forms.Textarea)
+    fields = ['name', 'your_email', 'to', "comment"]
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment

@@ -4,7 +4,7 @@ from .models import Post, Comment
 from django.views.decorators.http import require_POST
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
-from .forms import CommentForm, EmailPostForm, PostForm
+from .forms import CommentForm, EmailSendForm, EmailPostForm, PostForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic import (
 	ListView,
@@ -83,8 +83,7 @@ def post_detail(request, id, post):
 					"comments":comments,
 					"form":form})
 
-@login_required
-# @require_POST
+@require_POST
 def post_comment(request, post_id):
 	post = get_object_or_404(Post, 
 							id=post_id)
@@ -101,33 +100,56 @@ def post_comment(request, post_id):
 							'form': form,
 							'comment': comment})
 
-@login_required
+
 def post_share(request, id):
 	post = get_object_or_404(Post, id=id)
 								# status = Post.Status.PUBLISHED)
 
 	sent=False
-	if request.method == "POST":
-		form = EmailPostForm(request.POST)
-		if form.is_valid():
-			cd = form.cleaned_data
-			user = request.user
-			post_url = request.build_absolute_uri(
-				post.get_absolute_url())
-			subject = f"{cd['name']} recommends you read " \
-				f"{post.title}"
-			message = f"Read {post.title} at {post_url}\n\n" \
-				f"{cd['name']}\'s comments: {cd['comment']}"
-			send_mail(subject, message, {user.email},
-				[cd['to']])
-			sent = True
+	if request.user.is_authenticated:
+		if request.method == "POST":
+			form = EmailPostForm(request.POST)
+			if form.is_valid():
+				cd = form.cleaned_data
+				user = request.user
+				post_url = request.build_absolute_uri(
+					post.get_absolute_url())
+				subject = f"{cd['name']} recommends you read " \
+					f"{post.title}"
+				message = f"Read {post.title} at {post_url}\n\n" \
+					f"{cd['name']}\'s comments: {cd['comment']}"
+				send_mail(subject, message, {user.email},
+					[cd['to']])
+				sent = True
 
+		else:
+			form = EmailPostForm()
+		return render(request, "blog/post_share.html",
+								{'post':post,
+								'form': form,
+								"sent": sent})
 	else:
-		form = EmailPostForm()
-	return render(request, "blog/post_share.html",
-							{'post':post,
-							'form': form,
-							"sent": sent})
+		if request.method == "POST":
+			form = EmailSendForm(request.POST)
+			if form.is_valid():
+				cd = form.cleaned_data
+				user = request.user
+				post_url = request.build_absolute_uri(
+					post.get_absolute_url())
+				subject = f"{cd['name']} recommends you read " \
+					f"{post.title}"
+				message = f"Read {post.title} at {post_url}\n\n" \
+					f"{cd['name']}\'s comments: {cd['comment']}"
+				send_mail(subject, message, [cd['your_email']],
+					[cd['to']])
+				sent = True
+
+		else:
+			form = EmailSendForm()
+		return render(request, "blog/post_share.html",
+								{'post':post,
+								'form': form,
+								"sent": sent})
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
